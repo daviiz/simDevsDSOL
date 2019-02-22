@@ -63,10 +63,9 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
 
 
         /**
-         * 模型耦合关系设置
+         * 输入输出端口设置
          */
         try {
-
             this.addInputPort("MOVE_CMD",MOVE_CMD);
             this.addOutputPort("MOVE_RESULT",MOVE_RESULT);
         } catch (PortAlreadyDefinedException e) {
