@@ -148,6 +148,9 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
         if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
             this.phase.setLifeTime(this.phase.getLifeTime()-e);
         }
+        if(this.phase.getName().equals("MOVE")){
+            this.moveCmd = (MoveCmd)value;
+        }
     }
 
     /**
@@ -155,7 +158,7 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
      */
     @Override
     protected  void lambda(){
-        if(super.phase.getName().equals("MOVE")){
+        if(this.phase.getName().equals("MOVE")){
             MoveResult result = new MoveResult(data);
             MOVE_RESULT.send(result);
         }
@@ -167,6 +170,6 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
      */
     @Override
     protected  Double timeAdvance(){
-        return super.phase.getLifeTime();
+        return this.phase.getLifeTime();
     }
 }
