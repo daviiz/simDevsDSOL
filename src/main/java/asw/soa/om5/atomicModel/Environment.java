@@ -5,6 +5,7 @@ import asw.soa.om5.outportPort.EnvOut_ENT_INFO;
 import asw.soa.om5.portType.ENT_INFO;
 import asw.soa.om5.portType.MoveResult;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.AtomicModel;
+import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyDefinedException;
 import nl.tudelft.simulation.dsol.logger.SimLogger;
@@ -20,8 +21,8 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
 
     private Phase INFINITY;
 
-    public Environment(String modelName, DEVSSimulatorInterface<Double, Double, SimTimeDouble> simulator) {
-        super(modelName, simulator);
+    public Environment(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
+        super(modelName, parentModel);
         this.in_move_result = new EnvIn_MOVE_RESULT(this);
         this.out_ent_info = new EnvOut_ENT_INFO(this);
         INFINITY = new Phase("INFINITY");INFINITY.setLifeTime(1.0);
@@ -44,6 +45,30 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
         initialize(this.elapsedTime);
     }
 
+//    public Environment(String modelName, DEVSSimulatorInterface<Double, Double, SimTimeDouble> simulator) {
+//        super(modelName, simulator);
+//        this.in_move_result = new EnvIn_MOVE_RESULT(this);
+//        this.out_ent_info = new EnvOut_ENT_INFO(this);
+//        INFINITY = new Phase("INFINITY");INFINITY.setLifeTime(1.0);
+//
+//        result = new MoveResult();
+//
+//        /**
+//         * 输入输出端口设置
+//         */
+//        try {
+//            this.addInputPort("in_move_result",in_move_result);
+//            this.addOutputPort("out_ent_info",out_ent_info);
+//        } catch (PortAlreadyDefinedException e) {
+//            SimLogger.always().error(e);
+//        }
+//        /**
+//         * 模型状态初始化：
+//         */
+//        this.phase = INFINITY;
+//        initialize(this.elapsedTime);
+//    }
+
     @Override
     protected void deltaInternal() {
 
@@ -54,6 +79,7 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
         if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
             this.phase.setLifeTime(this.phase.getLifeTime()-e);
         }
+
         if(this.phase.getName().equals("INFINITY")){
             this.result = (MoveResult)value;
         }
@@ -64,8 +90,8 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
         if(this.phase.getName().equals("INFINITY")&& result!=null){
             ENT_INFO s = new ENT_INFO(result);
             result.senderId = super.modelName;
+            if(result.name.equals("0")) return;
             out_ent_info.send(s);
-            result = null;
         }
     }
 

@@ -19,12 +19,11 @@ public class Submarine extends CoupledModel<Double, Double, SimTimeDouble> {
     private Maneuver m;
     private Controller c;
 
-    public Submarine(String modelName, DEVSSimulatorInterface<Double, Double, SimTimeDouble> simulator, ModelData data) {
-        super(modelName, simulator);
-
-        s = new Sensor("s", simulator, 400);
-        c = new Controller("c", simulator);
-        m = new Maneuver("m", simulator, data);
+    public Submarine(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, ModelData data) {
+        super(modelName, parentModel);
+        s = new Sensor(data.name, this, data.detectRange);
+        c = new Controller(data.name, this);
+        m = new Maneuver(data.name, this, data);
 
         in_ENV_INFO = new In_ENV_INFO(this);
         out_ENT_INFO = new Out_ENT_INFO(this);
@@ -38,4 +37,24 @@ public class Submarine extends CoupledModel<Double, Double, SimTimeDouble> {
 
         this.addExternalOutputCoupling(m.out_MOVE_RESULT,this.out_ENT_INFO);
     }
+
+//    public Submarine(String modelName, DEVSSimulatorInterface<Double, Double, SimTimeDouble> simulator, ModelData data) {
+//        super(modelName, simulator);
+//
+//        s = new Sensor(data.name, simulator, data.detectRange);
+//        c = new Controller(data.name, simulator);
+//        m = new Maneuver(data.name, simulator, data);
+//
+//        in_ENV_INFO = new In_ENV_INFO(this);
+//        out_ENT_INFO = new Out_ENT_INFO(this);
+//
+//        this.addExternalInputCoupling(this.in_ENV_INFO,s.in_THREAT_ENT_INFO);
+//
+//        this.addInternalCoupling(m.out_MOVE_RESULT,s.in_MOVE_RESULT);
+//        this.addInternalCoupling(m.out_MOVE_RESULT,c.in_MOVE_RESULT);
+//        this.addInternalCoupling(s.out_THREAT_INFO,c.in_THREAT_INFO);
+//        this.addInternalCoupling(c.out_MOVE_CMD,m.in_MOVE_CMD);
+//
+//        this.addExternalOutputCoupling(m.out_MOVE_RESULT,this.out_ENT_INFO);
+//    }
 }

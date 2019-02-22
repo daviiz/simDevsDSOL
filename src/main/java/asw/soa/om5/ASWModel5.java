@@ -18,6 +18,10 @@ import java.rmi.RemoteException;
 
 public class ASWModel5 extends AbstractDSOLModel.TimeDouble<DEVSSimulatorInterface.TimeDouble>{
 
+    Fleet fleet;
+    Submarine sub;
+    Environment env;
+
     public ASWModel5(final DEVSSimulatorInterface.TimeDouble simulator) {
         super(simulator);
     }
@@ -31,7 +35,19 @@ public class ASWModel5 extends AbstractDSOLModel.TimeDouble<DEVSSimulatorInterfa
         ModelData s1Data = new ModelData("Sub_1");
         s1Data.origin = s1Data.destination = new CartesianPoint(200, 100, 0);
 
-        new RootCoupledModel("root",simulator,s1Data,s1Data);
+        RootCoupledModel root = new RootCoupledModel("root",f1Data,s1Data);
+        root.setSimulator(this.simulator);
+
+        sub = new Submarine(s1Data.name,root,s1Data);
+        fleet = new Fleet(f1Data.name,root,f1Data);
+        env = new Environment("env",root);
+
+        root.addInternalCoupling(fleet.out_ENT_INFO,env.in_move_result);
+        root.addInternalCoupling(sub.out_ENT_INFO,env.in_move_result);
+        root.addInternalCoupling(env.out_ent_info,fleet.in_ENV_INFO);
+        root.addInternalCoupling(env.out_ent_info,sub.in_ENV_INFO);
+
+
 
         //Maneuver m = new Maneuver("m", this.simulator, f1Data);
         //Maneuver m2 = new Maneuver("m", this.simulator, s1Data);

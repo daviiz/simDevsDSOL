@@ -8,6 +8,7 @@ import asw.soa.om5.portType.MoveCmd;
 import asw.soa.om5.portType.MoveResult;
 import asw.soa.util.SimUtil;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.AtomicModel;
+import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyDefinedException;
 import nl.tudelft.simulation.dsol.logger.SimLogger;
@@ -39,17 +40,8 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
     private ENT_INFO target;
     private MoveCmd moveCmd;
 
-    /**
-     * 模型构造器
-     * @param modelName
-     * @param simulator
-     * @param data
-     */
-    public Maneuver(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator, ModelData data){
-        /**
-         * 模型成员变量实例化
-         */
-        super(modelName,simulator);
+    public Maneuver(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, ModelData data) {
+        super(modelName, parentModel);
         this.data = data;
         this.target = new ENT_INFO();
         this.moveCmd = new MoveCmd();
@@ -78,6 +70,46 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
         this.phase = MOVE;
         initialize(this.elapsedTime);
     }
+
+//    /**
+//     * 模型构造器
+//     * @param modelName
+//     * @param simulator
+//     * @param data
+//     */
+//    public Maneuver(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator, ModelData data){
+//        /**
+//         * 模型成员变量实例化
+//         */
+//        super(modelName,simulator);
+//        this.data = data;
+//        this.target = new ENT_INFO();
+//        this.moveCmd = new MoveCmd();
+//        in_MOVE_CMD = new ManeuverIn_MOVE_CMD(this);
+//        out_MOVE_RESULT = new  ManeuverOut_MOVE_RESULT(this);
+//        IDLE = new Phase("IDLE");
+//        IDLE.setLifeTime(Double.POSITIVE_INFINITY);
+//        MOVE = new Phase("MOVE");
+//        MOVE.setLifeTime(10.0);
+//        FUEL = new Phase("FUEL");
+//        FUEL.setLifeTime(0);
+//
+//
+//        /**
+//         * 输入输出端口设置
+//         */
+//        try {
+//            this.addInputPort("MOVE_CMD",in_MOVE_CMD);
+//            this.addOutputPort("MOVE_RESULT",out_MOVE_RESULT);
+//        } catch (PortAlreadyDefinedException e) {
+//            SimLogger.always().error(e);
+//        }
+//        /**
+//         * 模型状态初始化：
+//         */
+//        this.phase = MOVE;
+//        initialize(this.elapsedTime);
+//    }
 
 
     /**
@@ -131,7 +163,10 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
         if(this.phase.getName().equals("MOVE")){
             MoveResult result = new MoveResult(data);
             result.senderId = super.modelName;
+            if(result.name.equals("0")) return;
+
             out_MOVE_RESULT.send(result);
+            //System.out.println("=================="+result.name);
         }
     }
 

@@ -7,6 +7,7 @@ import asw.soa.om5.portType.ENT_INFO;
 import asw.soa.om5.portType.MoveResult;
 import asw.soa.util.SimUtil;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.AtomicModel;
+import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyDefinedException;
 import nl.tudelft.simulation.dsol.logger.SimLogger;
@@ -38,15 +39,8 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
     private double detectRange;
     private ENT_INFO target;
 
-    /**
-     *
-     * @param modelName
-     * @param simulator
-     * @param detectRange
-     */
-    public Sensor(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator, double detectRange) {
-        super(modelName, simulator);
-
+    public Sensor(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, double detectRange) {
+        super(modelName, parentModel);
         /**
          * 模型成员变量实例化
          */
@@ -77,8 +71,49 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
         DETECT.setLifeTime(8.0);
         this.phase = IDLE;
         initialize(this.elapsedTime);
-
     }
+
+//    /**
+//     *
+//     * @param modelName
+//     * @param simulator
+//     * @param detectRange
+//     */
+//    public Sensor(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator, double detectRange) {
+//        super(modelName, simulator);
+//
+//        /**
+//         * 模型成员变量实例化
+//         */
+//        in_MOVE_RESULT  = new SensorIn_MOVE_RESULT(this);
+//        in_THREAT_ENT_INFO = new SensorIn_THREAT_ENT_INFO(this);
+//        out_THREAT_INFO = new SensorOut_THREAT_INFO(this);
+//        IDLE = new Phase("IDLE");
+//        DETECT = new Phase("DETECT");
+//        currentPos = new MoveResult();
+//        this.detectRange = detectRange;
+//        target = new ENT_INFO();
+//
+//        /**
+//         * 输入输出端口设置
+//         */
+//        try {
+//            this.addInputPort("MOVE_RESULT",in_MOVE_RESULT);
+//            this.addInputPort("THREAT_ENT_INFO",in_THREAT_ENT_INFO);
+//            this.addOutputPort("THREAT_INFO",out_THREAT_INFO);
+//        } catch (PortAlreadyDefinedException e) {
+//            SimLogger.always().error(e);
+//        }
+//
+//        /**
+//         * 模型状态初始化：
+//         */
+//        IDLE.setLifeTime(Double.POSITIVE_INFINITY);
+//        DETECT.setLifeTime(8.0);
+//        this.phase = IDLE;
+//        initialize(this.elapsedTime);
+//
+//    }
 
     @Override
     protected void deltaInternal() {
@@ -92,8 +127,12 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
+        System.out.println("Sensor received Input.......");
         if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
             this.phase.setLifeTime(this.phase.getLifeTime()-e);
+        }
+        if(this.phase.getName().equals("IDLE")){
+            this.phase = DETECT;
         }
         if(this.phase.getName().equals("DETECT")){
             if(this.activePort == in_MOVE_RESULT){
@@ -120,6 +159,9 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
         if(this.phase.getName().equals("DETECT")){
             ENT_INFO result = new ENT_INFO(target);
             result.senderId = super.modelName;
+
+            if(result.name.equals("0")) return;
+
             out_THREAT_INFO.send(result);
         }
     }
