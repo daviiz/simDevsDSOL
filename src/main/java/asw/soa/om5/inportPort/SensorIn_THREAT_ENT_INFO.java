@@ -1,18 +1,17 @@
 package asw.soa.om5.inportPort;
 
-import asw.soa.om5.portType.MoveCmd;
+import asw.soa.om5.portType.ENT_INFO;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.AtomicModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.InputPort;
 import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 
-public class ManeuverIn_MOVE_CMD extends InputPort<Double, Double, SimTimeDouble, MoveCmd> {
-
-    public ManeuverIn_MOVE_CMD(CoupledModel coupledModel) {
+public class SensorIn_THREAT_ENT_INFO extends InputPort<Double, Double, SimTimeDouble, ENT_INFO> {
+    public SensorIn_THREAT_ENT_INFO(CoupledModel<Double, Double, SimTimeDouble> coupledModel) {
         super(coupledModel);
     }
 
-    public ManeuverIn_MOVE_CMD(AtomicModel atomicModel) {
+    public SensorIn_THREAT_ENT_INFO(AtomicModel<Double, Double, SimTimeDouble> atomicModel) {
         super(atomicModel);
     }
 }

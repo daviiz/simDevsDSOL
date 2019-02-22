@@ -1,14 +1,13 @@
-package asw.soa.om5;
+package asw.soa.om5.atomicModel;
 
 import asw.soa.data.ModelData;
-import asw.soa.util.SimUtil;
 import asw.soa.om5.inportPort.ManeuverIn_MOVE_CMD;
 import asw.soa.om5.outportPort.ManeuverOut_MOVE_RESULT;
 import asw.soa.om5.portType.ENT_INFO;
 import asw.soa.om5.portType.MoveCmd;
 import asw.soa.om5.portType.MoveResult;
+import asw.soa.util.SimUtil;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.AtomicModel;
-import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyDefinedException;
 import nl.tudelft.simulation.dsol.logger.SimLogger;
@@ -18,18 +17,20 @@ import nl.tudelft.simulation.language.d3.CartesianPoint;
 
 public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
 {
+
+    /**
+     * 模型输入端口 - X
+     */
+    public ManeuverIn_MOVE_CMD in_MOVE_CMD;
+    /**
+     * 模型输出端口 - Y
+     */
+    public ManeuverOut_MOVE_RESULT  out_MOVE_RESULT;
+
     /**
      * 模型状态集合 - States
      */
     private Phase IDLE,MOVE,FUEL;
-    /**
-     * 模型输入端口 - X
-     */
-    private ManeuverIn_MOVE_CMD MOVE_CMD;
-    /**
-     * 模型输出端口 - Y
-     */
-    private ManeuverOut_MOVE_RESULT  MOVE_RESULT;
 
     /**
      * 模型私有数据
@@ -52,8 +53,8 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
         this.data = data;
         this.target = new ENT_INFO();
         this.moveCmd = new MoveCmd();
-        MOVE_CMD = new ManeuverIn_MOVE_CMD(this);
-        MOVE_RESULT = new  ManeuverOut_MOVE_RESULT(this);
+        in_MOVE_CMD = new ManeuverIn_MOVE_CMD(this);
+        out_MOVE_RESULT = new  ManeuverOut_MOVE_RESULT(this);
         IDLE = new Phase("IDLE");
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
         MOVE = new Phase("MOVE");
@@ -66,8 +67,8 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
          * 输入输出端口设置
          */
         try {
-            this.addInputPort("MOVE_CMD",MOVE_CMD);
-            this.addOutputPort("MOVE_RESULT",MOVE_RESULT);
+            this.addInputPort("MOVE_CMD",in_MOVE_CMD);
+            this.addOutputPort("MOVE_RESULT",out_MOVE_RESULT);
         } catch (PortAlreadyDefinedException e) {
             SimLogger.always().error(e);
         }
@@ -78,46 +79,15 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
         initialize(this.elapsedTime);
     }
 
-    /**
-     * 模型构造器-2
-     * @param modelName
-     * @param parentModel
-     * @param data
-     */
-    public Maneuver(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel,ModelData data) {
-        super(modelName, parentModel);
-
-        this.data = data;
-        this.target = new ENT_INFO();
-        this.moveCmd = new MoveCmd();
-
-        IDLE = new Phase("IDLE");
-        IDLE.setLifeTime(Double.POSITIVE_INFINITY);
-
-        MOVE = new Phase("MOVE");
-        MOVE.setLifeTime(10.0);
-
-        FUEL = new Phase("FUEL");
-        FUEL.setLifeTime(0);
-
-        this.phase = MOVE;
-
-        try {
-            MOVE_CMD = new ManeuverIn_MOVE_CMD(this);
-            MOVE_RESULT = new  ManeuverOut_MOVE_RESULT(this);
-            this.addInputPort("MOVE_CMD",MOVE_CMD);
-            this.addOutputPort("MOVE_RESULT",MOVE_RESULT);
-        } catch (PortAlreadyDefinedException e) {
-            SimLogger.always().error(e);
-        }
-        initialize(this.elapsedTime);
-    }
 
     /**
      * the delta internal function that should be implemented by the extending class.
      */
     @Override
     protected  void deltaInternal(){
+        if(super.phase.getName().equals("IDLE")){
+            this.phase = MOVE;
+        }
         if(super.phase.getName().equals("MOVE")){
             this.data.origin = this.data.destination;
 
@@ -160,7 +130,8 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
     protected  void lambda(){
         if(this.phase.getName().equals("MOVE")){
             MoveResult result = new MoveResult(data);
-            MOVE_RESULT.send(result);
+            result.senderId = super.modelName;
+            out_MOVE_RESULT.send(result);
         }
     }
 
