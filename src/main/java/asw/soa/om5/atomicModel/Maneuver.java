@@ -13,11 +13,9 @@ import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyDefinedException;
 import nl.tudelft.simulation.dsol.logger.SimLogger;
 import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
-import nl.tudelft.simulation.dsol.simulators.DEVSSimulatorInterface;
 import nl.tudelft.simulation.language.d3.CartesianPoint;
 
-public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
-{
+public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
 
     /**
      * 模型输入端口 - X
@@ -26,12 +24,12 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
     /**
      * 模型输出端口 - Y
      */
-    public ManeuverOut_MOVE_RESULT  out_MOVE_RESULT;
+    public ManeuverOut_MOVE_RESULT out_MOVE_RESULT;
 
     /**
      * 模型状态集合 - States
      */
-    private Phase IDLE,MOVE,FUEL;
+    private Phase IDLE, MOVE, FUEL;
 
     /**
      * 模型私有数据
@@ -51,7 +49,7 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
         this.target = new ENT_INFO();
         this.moveCmd = new MoveCmd();
         in_MOVE_CMD = new ManeuverIn_MOVE_CMD(this);
-        out_MOVE_RESULT = new  ManeuverOut_MOVE_RESULT(this);
+        out_MOVE_RESULT = new ManeuverOut_MOVE_RESULT(this);
         IDLE = new Phase("IDLE");
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
         MOVE = new Phase("MOVE");
@@ -64,8 +62,8 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
          * 输入输出端口设置
          */
         try {
-            this.addInputPort("MOVE_CMD",in_MOVE_CMD);
-            this.addOutputPort("MOVE_RESULT",out_MOVE_RESULT);
+            this.addInputPort("MOVE_CMD", in_MOVE_CMD);
+            this.addOutputPort("MOVE_RESULT", out_MOVE_RESULT);
         } catch (PortAlreadyDefinedException ex) {
             SimLogger.always().error(ex);
         }
@@ -121,11 +119,11 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
      * the delta internal function that should be implemented by the extending class.
      */
     @Override
-    protected  void deltaInternal(){
-        if(super.phase.getName().equals("IDLE")){
+    protected void deltaInternal() {
+        if (super.phase.getName().equals("IDLE")) {
             this.phase = MOVE;
         }
-        if(super.phase.getName().equals("MOVE")){
+        if (super.phase.getName().equals("MOVE")) {
             this.data.origin = this.data.destination;
 
             if (!this.data.status) {
@@ -147,16 +145,17 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
 
     /**
      * The user defined deltaExternal method that is defined in an extension of this class.
-     * @param e R; the elapsed time since the last state transition
+     *
+     * @param e     R; the elapsed time since the last state transition
      * @param value Object; the value that has been passed through the port
      */
     @Override
-    protected  void deltaExternal(Double e, Object value){
-        if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
-            this.sigma = (this.phase.getLifeTime()-e);
+    protected void deltaExternal(Double e, Object value) {
+        if (this.phase.getLifeTime() != Double.POSITIVE_INFINITY) {
+            this.sigma = (this.phase.getLifeTime() - e);
         }
-        if(this.phase.getName().equals("MOVE")){
-            this.moveCmd = (MoveCmd)value;
+        if (this.phase.getName().equals("MOVE")) {
+            this.moveCmd = (MoveCmd) value;
         }
     }
 
@@ -164,11 +163,11 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
      * the lambda function that should be implemented by the extending class.
      */
     @Override
-    protected  void lambda(){
-        if(this.phase.getName().equals("MOVE")){
+    protected void lambda() {
+        if (this.phase.getName().equals("MOVE")) {
             MoveResult result = new MoveResult(data);
             result.senderId = super.modelName;
-            if(result.name.equals("0")) return;
+            if (result.name.equals("0")) return;
 
             out_MOVE_RESULT.send(result);
             //System.out.println("=================="+result.name);
@@ -177,10 +176,11 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
 
     /**
      * the time advance function that should be implemented by the extending class.
+     *
      * @return the ta, which is the time advance from one state to the next.
      */
     @Override
-    protected  Double timeAdvance(){
+    protected Double timeAdvance() {
         return this.sigma;
     }
 }

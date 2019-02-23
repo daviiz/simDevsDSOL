@@ -18,17 +18,17 @@ import java.rmi.RemoteException;
 public class ASWSwingApplication5 extends DSOLApplication {
 
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * @param title String; the title
      * @param panel DSOLPanel&lt;Double,Double,SimTimeDouble&gt;; the panel
      */
     public ASWSwingApplication5(final String title, final DSOLPanel<Double, Double, SimTimeDouble> panel) {
         super(title, panel);
     }
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
      * @param args String[]; arguments, expected to be empty

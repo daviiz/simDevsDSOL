@@ -12,6 +12,7 @@ import java.util.HashMap;
 public class Visual2dService {
 
     private static volatile Visual2dService instance;
+    private HashMap<String, Visual2dRender> components = new HashMap<>();
 
     private Visual2dService() {
     }
@@ -26,9 +27,6 @@ public class Visual2dService {
         }
         return instance;
     }
-
-    private HashMap<String, Visual2dRender> components = new HashMap<>();
-
 
     public void addVisualComponent(String name, Visual2dRender c) {
         if (c == null || name == null || name.equals(""))

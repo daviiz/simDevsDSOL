@@ -1,11 +1,7 @@
 package asw.soa.om5;
 
 import asw.soa.data.ModelData;
-import asw.soa.om5.atomicModel.Environment;
-import asw.soa.om5.atomicModel.Maneuver;
-import asw.soa.om5.coupledModel.Fleet;
 import asw.soa.om5.coupledModel.RootCoupledModel;
-import asw.soa.om5.coupledModel.Submarine;
 import asw.soa.view.Visual2dService;
 import nl.tudelft.simulation.dsol.SimRuntimeException;
 import nl.tudelft.simulation.dsol.logger.SimLogger;
@@ -16,7 +12,7 @@ import nl.tudelft.simulation.language.d3.CartesianPoint;
 import javax.naming.NamingException;
 import java.rmi.RemoteException;
 
-public class ASWModel5 extends AbstractDSOLModel.TimeDouble<DEVSSimulatorInterface.TimeDouble>{
+public class ASWModel5 extends AbstractDSOLModel.TimeDouble<DEVSSimulatorInterface.TimeDouble> {
 
 //    Fleet fleet;
 //    Submarine sub;
@@ -37,7 +33,7 @@ public class ASWModel5 extends AbstractDSOLModel.TimeDouble<DEVSSimulatorInterfa
 
         RootCoupledModel root = new RootCoupledModel("root");
         root.setSimulator(this.simulator);
-        root.constructModel(f1Data,s1Data);
+        root.constructModel(f1Data, s1Data);
 
 
 //        sub = new Submarine(s1Data.name,root,s1Data);
@@ -48,7 +44,6 @@ public class ASWModel5 extends AbstractDSOLModel.TimeDouble<DEVSSimulatorInterfa
 //        root.addInternalCoupling(sub.out_ENT_INFO,env.in_move_result);
 //        root.addInternalCoupling(env.out_ent_info,fleet.in_ENV_INFO);
 //        root.addInternalCoupling(env.out_ent_info,sub.in_ENV_INFO);
-
 
 
         //Maneuver m = new Maneuver("m", this.simulator, f1Data);

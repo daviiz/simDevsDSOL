@@ -13,9 +13,8 @@ import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyDefinedException;
 import nl.tudelft.simulation.dsol.logger.SimLogger;
 import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
-import nl.tudelft.simulation.dsol.simulators.DEVSSimulatorInterface;
 
-public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
+public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 
     /**
      * X
@@ -30,7 +29,7 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
     /**
      * States
      */
-    private Phase WAIT,IDENTIFICATION;
+    private Phase WAIT, IDENTIFICATION;
 
     /**
      * model's private data
@@ -47,16 +46,18 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
         in_MOVE_RESULT = new ControllerIn_MOVE_RESULT(this);
         in_THREAT_INFO = new ControllerIn_THREAT_INFO(this);
         out_MOVE_CMD = new ControllerOut_MOVE_CMD(this);
-        WAIT = new Phase("WAIT"); WAIT.setLifeTime(Double.POSITIVE_INFINITY);
-        IDENTIFICATION = new Phase("IDENTIFICATION");IDENTIFICATION.setLifeTime(7.0);
+        WAIT = new Phase("WAIT");
+        WAIT.setLifeTime(Double.POSITIVE_INFINITY);
+        IDENTIFICATION = new Phase("IDENTIFICATION");
+        IDENTIFICATION.setLifeTime(7.0);
 
         currentPos = new MoveResult();
         target = new ThreatInfo();
 
         try {
-            this.addInputPort("MOVE_RESULT",in_MOVE_RESULT);
-            this.addInputPort("THREAT_INFO",in_THREAT_INFO);
-            this.addOutputPort("MOVE_CMD",out_MOVE_CMD);
+            this.addInputPort("MOVE_RESULT", in_MOVE_RESULT);
+            this.addInputPort("THREAT_INFO", in_THREAT_INFO);
+            this.addOutputPort("MOVE_CMD", out_MOVE_CMD);
         } catch (PortAlreadyDefinedException ex) {
             SimLogger.always().error(ex);
         }
@@ -91,27 +92,27 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
-        if(this.phase.getName().equals("WAIT")){
+        if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
         }
-        if(this.phase.getName().equals("IDENTIFICATION")){
+        if (this.phase.getName().equals("IDENTIFICATION")) {
 
         }
     }
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
-            this.sigma = (this.phase.getLifeTime()-e);
+        if (this.phase.getLifeTime() != Double.POSITIVE_INFINITY) {
+            this.sigma = (this.phase.getLifeTime() - e);
         }
-        if(this.phase.getName().equals("WAIT")){
+        if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
         }
-        if(this.phase.getName().equals("IDENTIFICATION")){
-            if(this.activePort == in_MOVE_RESULT){
+        if (this.phase.getName().equals("IDENTIFICATION")) {
+            if (this.activePort == in_MOVE_RESULT) {
                 //控制器接收自己的机动信息，决策依据
                 currentPos = (MoveResult) value;
-            }else if(this.activePort == in_THREAT_INFO){
+            } else if (this.activePort == in_THREAT_INFO) {
                 target = new ThreatInfo((ENT_INFO) value);
             }
         }
@@ -120,7 +121,7 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
 
     @Override
     protected void lambda() {
-        if(this.phase.getName().equals("IDENTIFICATION")){
+        if (this.phase.getName().equals("IDENTIFICATION")) {
             if (target.name.equals("0") || currentPos.name.equals("0")) {
 
             } else {

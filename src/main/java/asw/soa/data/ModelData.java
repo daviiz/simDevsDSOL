@@ -10,35 +10,29 @@ import java.awt.*;
 public class ModelData implements java.io.Serializable {
 
     /**
+     * the radius of the ball.
+     */
+    public static final double RADIUS = 5.0;
+    /**
      *
      */
     private static final long serialVersionUID = -3177965369711352742L;
-
     /**
      * the origin.
      */
     public CartesianPoint origin = new CartesianPoint(0, 0, 0);
-
     /**
      * the destination.
      */
     public CartesianPoint destination = new CartesianPoint(0, 0, 0);
-
     /**
      * the start time.
      */
     public double startTime = Double.NaN;
-
     /**
      * the stop time.
      */
     public double stopTime = Double.NaN;
-
-    /**
-     * the radius of the ball.
-     */
-    public static final double RADIUS = 5.0;
-
     /**
      * the angle of the ball.
      */
