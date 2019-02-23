@@ -41,6 +41,12 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
 
     public Sensor(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, double detectRange) {
         super(modelName, parentModel);
+        this.detectRange = detectRange;
+    }
+
+    @Override
+    public void initialize(Double e) {
+
         /**
          * 模型成员变量实例化
          */
@@ -50,7 +56,7 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
         IDLE = new Phase("IDLE");
         DETECT = new Phase("DETECT");
         currentPos = new MoveResult();
-        this.detectRange = detectRange;
+
         target = new ENT_INFO();
 
         /**
@@ -60,8 +66,8 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
             this.addInputPort("MOVE_RESULT",in_MOVE_RESULT);
             this.addInputPort("THREAT_ENT_INFO",in_THREAT_ENT_INFO);
             this.addOutputPort("THREAT_INFO",out_THREAT_INFO);
-        } catch (PortAlreadyDefinedException e) {
-            SimLogger.always().error(e);
+        } catch (PortAlreadyDefinedException ex) {
+            SimLogger.always().error(ex);
         }
 
         /**
@@ -69,11 +75,11 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
          */
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
         DETECT.setLifeTime(8.0);
-        this.phase = IDLE;
-        initialize(this.elapsedTime);
+        this.phase = DETECT;
+        this.sigma = this.phase.getLifeTime();
+        super.initialize(e);
     }
-
-//    /**
+    //    /**
 //     *
 //     * @param modelName
 //     * @param simulator
@@ -127,9 +133,9 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        System.out.println("Sensor received Input.......");
+        System.out.println("Sensor received Input......."+this.sigma);
         if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
-            this.phase.setLifeTime(this.phase.getLifeTime()-e);
+            this.sigma = (this.phase.getLifeTime()-e);
         }
         if(this.phase.getName().equals("IDLE")){
             this.phase = DETECT;
@@ -168,6 +174,6 @@ public class Sensor extends AtomicModel<Double,Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
-        return this.phase.getLifeTime();
+        return this.sigma;
     }
 }

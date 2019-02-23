@@ -23,6 +23,10 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
 
     public Environment(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
         super(modelName, parentModel);
+    }
+
+    @Override
+    public void initialize(Double e) {
         this.in_move_result = new EnvIn_MOVE_RESULT(this);
         this.out_ent_info = new EnvOut_ENT_INFO(this);
         INFINITY = new Phase("INFINITY");INFINITY.setLifeTime(1.0);
@@ -35,17 +39,14 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
         try {
             this.addInputPort("in_move_result",in_move_result);
             this.addOutputPort("out_ent_info",out_ent_info);
-        } catch (PortAlreadyDefinedException e) {
-            SimLogger.always().error(e);
+        } catch (PortAlreadyDefinedException ex) {
+            SimLogger.always().error(ex);
         }
-        /**
-         * 模型状态初始化：
-         */
         this.phase = INFINITY;
-        initialize(this.elapsedTime);
+        this.sigma = this.phase.getLifeTime();
+        super.initialize(e);
     }
-
-//    public Environment(String modelName, DEVSSimulatorInterface<Double, Double, SimTimeDouble> simulator) {
+    //    public Environment(String modelName, DEVSSimulatorInterface<Double, Double, SimTimeDouble> simulator) {
 //        super(modelName, simulator);
 //        this.in_move_result = new EnvIn_MOVE_RESULT(this);
 //        this.out_ent_info = new EnvOut_ENT_INFO(this);
@@ -77,7 +78,7 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
     @Override
     protected void deltaExternal(Double e, Object value) {
         if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
-            this.phase.setLifeTime(this.phase.getLifeTime()-e);
+            this.sigma = (this.phase.getLifeTime()-e);
         }
 
         if(this.phase.getName().equals("INFINITY")){
@@ -97,6 +98,6 @@ public class Environment extends AtomicModel<Double,Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
-        return this.phase.getLifeTime();
+        return this.sigma;
     }
 }

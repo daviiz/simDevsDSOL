@@ -19,11 +19,18 @@ public class Submarine extends CoupledModel<Double, Double, SimTimeDouble> {
     private Maneuver m;
     private Controller c;
 
-    public Submarine(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, ModelData data) {
+    public Submarine(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
         super(modelName, parentModel);
-        s = new Sensor(data.name, this, data.detectRange);
-        c = new Controller(data.name, this);
-        m = new Maneuver(data.name, this, data);
+
+    }
+
+    public void constructModel(ModelData data){
+        s = new Sensor(data.name+"_sensor",this,data.detectRange);
+        s.initialize(0.0);
+        c = new Controller(data.name+"_controller",this);
+        c.initialize(0.0);
+        m = new Maneuver(data.name+"_maneuver",this,data);
+        m.initialize(0.0);
 
         in_ENV_INFO = new In_ENV_INFO(this);
         out_ENT_INFO = new Out_ENT_INFO(this);

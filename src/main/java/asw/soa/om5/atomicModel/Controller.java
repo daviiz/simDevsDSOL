@@ -40,7 +40,10 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
 
     public Controller(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
         super(modelName, parentModel);
+    }
 
+    @Override
+    public void initialize(Double e) {
         in_MOVE_RESULT = new ControllerIn_MOVE_RESULT(this);
         in_THREAT_INFO = new ControllerIn_THREAT_INFO(this);
         out_MOVE_CMD = new ControllerOut_MOVE_CMD(this);
@@ -54,15 +57,15 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
             this.addInputPort("MOVE_RESULT",in_MOVE_RESULT);
             this.addInputPort("THREAT_INFO",in_THREAT_INFO);
             this.addOutputPort("MOVE_CMD",out_MOVE_CMD);
-        } catch (PortAlreadyDefinedException e) {
-            SimLogger.always().error(e);
+        } catch (PortAlreadyDefinedException ex) {
+            SimLogger.always().error(ex);
         }
 
-        this.phase = WAIT;
-        initialize(this.elapsedTime);
+        this.phase = IDENTIFICATION;
+        this.sigma = this.phase.getLifeTime();
+        super.initialize(e);
     }
-
-//    public Controller(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator) {
+    //    public Controller(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator) {
 //        super(modelName, simulator);
 //        in_MOVE_RESULT = new ControllerIn_MOVE_RESULT(this);
 //        in_THREAT_INFO = new ControllerIn_THREAT_INFO(this);
@@ -99,7 +102,7 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
     @Override
     protected void deltaExternal(Double e, Object value) {
         if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
-            this.phase.setLifeTime(this.phase.getLifeTime()-e);
+            this.sigma = (this.phase.getLifeTime()-e);
         }
         if(this.phase.getName().equals("WAIT")){
             this.phase = IDENTIFICATION;
@@ -130,6 +133,6 @@ public class Controller extends AtomicModel<Double,Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
-        return this.phase.getLifeTime();
+        return this.sigma;
     }
 }

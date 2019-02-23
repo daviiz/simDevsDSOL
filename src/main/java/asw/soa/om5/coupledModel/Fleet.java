@@ -20,15 +20,22 @@ public class Fleet extends CoupledModel<Double,Double, SimTimeDouble> {
     private Maneuver m;
     private Controller c;
 
-    public Fleet(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, ModelData data) {
+    public Fleet(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
         super(modelName, parentModel);
+
+    }
+
+    public void construcModel(ModelData data){
         in_ENV_INFO = new In_ENV_INFO(this);
         out_ENT_INFO = new Out_ENT_INFO(this);
 
 
-        s = new Sensor(data.name,this,data.detectRange);
-        c = new Controller(data.name,this);
-        m = new Maneuver(data.name,this,data);
+        s = new Sensor(data.name+"$sensor",this,data.detectRange);
+        s.initialize(0.0);
+        c = new Controller(data.name+"$controller",this);
+        c.initialize(0.0);
+        m = new Maneuver(data.name+"$maneuver",this,data);
+        m.initialize(0.0);
 
         this.addExternalInputCoupling(this.in_ENV_INFO,s.in_THREAT_ENT_INFO);
 

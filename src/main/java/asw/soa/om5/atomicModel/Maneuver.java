@@ -43,6 +43,11 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
     public Maneuver(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, ModelData data) {
         super(modelName, parentModel);
         this.data = data;
+    }
+
+    @Override
+    public void initialize(Double e) {
+
         this.target = new ENT_INFO();
         this.moveCmd = new MoveCmd();
         in_MOVE_CMD = new ManeuverIn_MOVE_CMD(this);
@@ -61,17 +66,17 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
         try {
             this.addInputPort("MOVE_CMD",in_MOVE_CMD);
             this.addOutputPort("MOVE_RESULT",out_MOVE_RESULT);
-        } catch (PortAlreadyDefinedException e) {
-            SimLogger.always().error(e);
+        } catch (PortAlreadyDefinedException ex) {
+            SimLogger.always().error(ex);
         }
         /**
          * 模型状态初始化：
          */
         this.phase = MOVE;
-        initialize(this.elapsedTime);
+        this.sigma = this.phase.getLifeTime();
+        super.initialize(e);
     }
-
-//    /**
+    //    /**
 //     * 模型构造器
 //     * @param modelName
 //     * @param simulator
@@ -148,7 +153,7 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
     @Override
     protected  void deltaExternal(Double e, Object value){
         if(this.phase.getLifeTime() != Double.POSITIVE_INFINITY){
-            this.phase.setLifeTime(this.phase.getLifeTime()-e);
+            this.sigma = (this.phase.getLifeTime()-e);
         }
         if(this.phase.getName().equals("MOVE")){
             this.moveCmd = (MoveCmd)value;
@@ -176,6 +181,6 @@ public class Maneuver extends AtomicModel<Double,Double, SimTimeDouble>
      */
     @Override
     protected  Double timeAdvance(){
-        return this.phase.getLifeTime();
+        return this.sigma;
     }
 }
