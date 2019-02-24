@@ -49,7 +49,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
         WAIT = new Phase("WAIT");
         WAIT.setLifeTime(Double.POSITIVE_INFINITY);
         IDENTIFICATION = new Phase("IDENTIFICATION");
-        IDENTIFICATION.setLifeTime(7.0);
+        IDENTIFICATION.setLifeTime(20);
 
         currentPos = new MoveResult();
         target = new ThreatInfo();
@@ -92,6 +92,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
+        this.sigma = this.phase.getLifeTime();
         if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
         }
@@ -102,8 +103,8 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        if (this.phase.getLifeTime() != Double.POSITIVE_INFINITY) {
-            this.sigma = (this.phase.getLifeTime() - e);
+        if (this.sigma != Double.POSITIVE_INFINITY) {
+            this.sigma = this.sigma -e ;
         }
         if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
@@ -121,6 +122,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void lambda() {
+        //System.out.println(this.modelName+" output......." + this.sigma +"---");
         if (this.phase.getName().equals("IDENTIFICATION")) {
             if (target.name.equals("0") || currentPos.name.equals("0")) {
 

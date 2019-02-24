@@ -35,12 +35,12 @@ public class RootCoupledModel extends CoupledModel<Double, Double, SimTimeDouble
         sub.constructModel(s1Data);
         fleet = new Fleet("Fleet", this);
         fleet.construcModel(f1Data);
-        env = new Environment("env", this);
-        env.initialize(0.0);
+//        env = new Environment("env", this);
+//        env.initialize(0.0);
 
-        this.addInternalCoupling(fleet.out_ENT_INFO, env.in_move_result);
-        this.addInternalCoupling(sub.out_ENT_INFO, env.in_move_result);
-        this.addInternalCoupling(env.out_ent_info, fleet.in_ENV_INFO);
-        this.addInternalCoupling(env.out_ent_info, sub.in_ENV_INFO);
+        this.addInternalCoupling(fleet.out_ENT_INFO, sub.in_ENV_INFO);
+        this.addInternalCoupling(sub.out_ENT_INFO, fleet.in_ENV_INFO);
+//        this.addInternalCoupling(env.out_ent_info, fleet.in_ENV_INFO);
+//        this.addInternalCoupling(env.out_ent_info, sub.in_ENV_INFO);
     }
 }

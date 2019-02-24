@@ -1,9 +1,7 @@
 package asw.soa.om5.coupledModel;
 
 import asw.soa.data.ModelData;
-import asw.soa.om5.atomicModel.Controller;
-import asw.soa.om5.atomicModel.Maneuver;
-import asw.soa.om5.atomicModel.Sensor;
+import asw.soa.om5.atomicModel.*;
 import asw.soa.om5.inportPort.In_ENV_INFO;
 import asw.soa.om5.outportPort.Out_ENT_INFO;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
@@ -14,9 +12,9 @@ public class Submarine extends CoupledModel<Double, Double, SimTimeDouble> {
     public In_ENV_INFO in_ENV_INFO;
     public Out_ENT_INFO out_ENT_INFO;
 
-    private Sensor s;
-    private Maneuver m;
-    private Controller c;
+    private Sensor2 s;
+    private Maneuver2 m;
+    private Controller2 c;
 
     public Submarine(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
         super(modelName, parentModel);
@@ -24,12 +22,14 @@ public class Submarine extends CoupledModel<Double, Double, SimTimeDouble> {
     }
 
     public void constructModel(ModelData data) {
-        s = new Sensor(data.name + "_sensor", this, data.detectRange);
+
+        s = new Sensor2(data.name + "_sensor", this, data.detectRange);
         s.initialize(0.0);
-        c = new Controller(data.name + "_controller", this);
+        c = new Controller2(data.name + "_controller", this);
         c.initialize(0.0);
-        m = new Maneuver(data.name + "_maneuver", this, data);
+        m = new Maneuver2(data.name + "_maneuver", this, data);
         m.initialize(0.0);
+
 
         in_ENV_INFO = new In_ENV_INFO(this);
         out_ENT_INFO = new Out_ENT_INFO(this);

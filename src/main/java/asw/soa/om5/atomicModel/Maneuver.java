@@ -53,7 +53,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
         IDLE = new Phase("IDLE");
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
         MOVE = new Phase("MOVE");
-        MOVE.setLifeTime(10.0);
+        MOVE.setLifeTime(50.0);
         FUEL = new Phase("FUEL");
         FUEL.setLifeTime(0);
 
@@ -124,6 +124,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
             this.phase = MOVE;
         }
         if (super.phase.getName().equals("MOVE")) {
+            this.sigma = this.phase.getLifeTime();
             this.data.origin = this.data.destination;
 
             if (!this.data.status) {
@@ -150,10 +151,12 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
      * @param value Object; the value that has been passed through the port
      */
     @Override
-    protected void deltaExternal(Double e, Object value) {
-        if (this.phase.getLifeTime() != Double.POSITIVE_INFINITY) {
-            this.sigma = (this.phase.getLifeTime() - e);
-        }
+    protected synchronized void deltaExternal(Double e, Object value) {
+
+//        if (this.sigma != Double.POSITIVE_INFINITY) {
+//            //double tmp = (this.phase.getLifeTime() - e);
+//            this.sigma = this.sigma -e ;
+//        }
         if (this.phase.getName().equals("MOVE")) {
             this.moveCmd = (MoveCmd) value;
         }
@@ -164,6 +167,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected void lambda() {
+
         if (this.phase.getName().equals("MOVE")) {
             MoveResult result = new MoveResult(data);
             result.senderId = super.modelName;
@@ -180,7 +184,9 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
      * @return the ta, which is the time advance from one state to the next.
      */
     @Override
-    protected Double timeAdvance() {
+    protected Double timeAdvance()
+    {
+        //System.out.println("--current Model: "+this.modelName+"---simTime: "+super.simulator.getSimulatorTime()+" timeAdvance:---" + this.sigma);
         return this.sigma;
     }
 }

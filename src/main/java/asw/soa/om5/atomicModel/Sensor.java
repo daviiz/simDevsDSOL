@@ -43,6 +43,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
         this.detectRange = detectRange;
     }
 
+
     @Override
     public void initialize(Double e) {
 
@@ -55,8 +56,9 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
         IDLE = new Phase("IDLE");
         DETECT = new Phase("DETECT");
         currentPos = new MoveResult();
-
         target = new ENT_INFO();
+        IDLE.setLifeTime(Double.POSITIVE_INFINITY);
+        DETECT.setLifeTime(10.0);
 
         /**
          * 输入输出端口设置
@@ -72,8 +74,6 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
         /**
          * 模型状态初始化：
          */
-        IDLE.setLifeTime(Double.POSITIVE_INFINITY);
-        DETECT.setLifeTime(8.0);
         this.phase = DETECT;
         this.sigma = this.phase.getLifeTime();
         super.initialize(e);
@@ -122,6 +122,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
+        this.sigma = this.phase.getLifeTime();
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
         }
@@ -132,9 +133,9 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        System.out.println("Sensor received Input......." + this.sigma);
-        if (this.phase.getLifeTime() != Double.POSITIVE_INFINITY) {
-            this.sigma = (this.phase.getLifeTime() - e);
+//        System.out.println(this.modelName+" received Input......." + this.sigma +"---"+value.toString());
+        if (this.sigma != Double.POSITIVE_INFINITY) {
+            this.sigma = this.sigma -e ;
         }
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
@@ -148,11 +149,11 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
             } else if (this.activePort == in_THREAT_ENT_INFO) {
 
                 //传感器接收环境信息，决策依据：
-                ENT_INFO ent = (ENT_INFO) value;
+                MoveResult ent = (MoveResult) value;
                 if (ent.belong != currentPos.belong) {
                     double distance = SimUtil.calcLength(currentPos.x, currentPos.y, ent.x, ent.y);
                     if (distance < this.detectRange)
-                        target = ent;
+                        target = new ENT_INFO(ent);
                 }
 
             }
@@ -161,13 +162,17 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void lambda() {
+//        System.out.println(this.modelName+" output......." + this.sigma +"---");
         if (this.phase.getName().equals("DETECT")) {
             ENT_INFO result = new ENT_INFO(target);
             result.senderId = super.modelName;
 
-            if (result.name.equals("0")) return;
+            if (result.name.equals("0"))
+            {
 
-            out_THREAT_INFO.send(result);
+            }else {
+                out_THREAT_INFO.send(result);
+            }
         }
     }
 
