@@ -13,7 +13,7 @@ import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyD
 import nl.tudelft.simulation.dsol.logger.SimLogger;
 import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 
-public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
+public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     /**
      * X
@@ -38,7 +38,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
     private double detectRange;
     private ENT_INFO target;
 
-    public Sensor(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, double detectRange) {
+    public Sensor2(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, double detectRange) {
         super(modelName, parentModel);
         this.detectRange = detectRange;
     }
@@ -122,6 +122,8 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
+//        System.out.print("---currrentModel:---" + this.modelName+"---deltaInternal, ");
+//        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
         //this.sigma = this.phase.getLifeTime();
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
@@ -134,6 +136,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected void deltaExternal(Double e, Object value) {
         this.elapsedTime = e;
+
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
         }
@@ -168,6 +171,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
             {
 
             }else {
+                this.elapsedTime = 10.0;
                 out_THREAT_INFO.send(result);
             }
         }

@@ -15,7 +15,7 @@ import nl.tudelft.simulation.dsol.logger.SimLogger;
 import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 import nl.tudelft.simulation.language.d3.CartesianPoint;
 
-public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
+public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     /**
      * 模型输入端口 - X
@@ -38,7 +38,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
     private ENT_INFO target;
     private MoveCmd moveCmd;
 
-    public Maneuver(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, ModelData data) {
+    public Maneuver2(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel, ModelData data) {
         super(modelName, parentModel);
         this.data = data;
     }
@@ -53,7 +53,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
         IDLE = new Phase("IDLE");
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
         MOVE = new Phase("MOVE");
-        MOVE.setLifeTime(100.0);
+        MOVE.setLifeTime(100);
         FUEL = new Phase("FUEL");
         FUEL.setLifeTime(0);
 
@@ -120,6 +120,10 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected void deltaInternal() {
+        this.elapsedTime = this.elapsedTime + 10;
+        System.out.print("---currrentModel:---" + this.modelName+"---deltaInternal, ");
+        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
+        //this.sigma = this.phase.getLifeTime();
         if (super.phase.getName().equals("IDLE")) {
             this.phase = MOVE;
         }
@@ -152,11 +156,21 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected synchronized void deltaExternal(Double e, Object value) {
-
-        this.elapsedTime = e;
+            this.elapsedTime = e;
+//        if (this.sigma != Double.POSITIVE_INFINITY) {
+//            //double tmp = (this.phase.getLifeTime() - e);
+//            this.sigma = this.sigma -e ;
+//        }
+//        if("Sub_1_maneuver".equals(this.modelName)){
+//            System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
+//            System.out.println("---sigma:---" + this.sigma);
+//            System.out.println("---elapsedTime---"+e);
+//        }
         if (this.phase.getName().equals("MOVE")) {
             this.moveCmd = (MoveCmd) value;
+            this.target = new ENT_INFO(this.moveCmd.threat);
         }
+//        this.sigma = Double.POSITIVE_INFINITY;
     }
 
     /**
@@ -169,7 +183,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
             MoveResult result = new MoveResult(data);
             result.senderId = super.modelName;
             if (result.name.equals("0")) return;
-
+            this.elapsedTime = 10.0;
             out_MOVE_RESULT.send(result);
             //System.out.println("=================="+result.name);
         }

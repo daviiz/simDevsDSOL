@@ -14,7 +14,7 @@ import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.exceptions.PortAlreadyD
 import nl.tudelft.simulation.dsol.logger.SimLogger;
 import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 
-public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
+public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     /**
      * X
@@ -37,7 +37,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
     private MoveResult currentPos;
     private ThreatInfo target;
 
-    public Controller(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
+    public Controller2(String modelName, CoupledModel<Double, Double, SimTimeDouble> parentModel) {
         super(modelName, parentModel);
     }
 
@@ -63,7 +63,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
         }
 
         this.phase = IDENTIFICATION;
-        //this.elapsedTime = e;
+        this.sigma = this.phase.getLifeTime();
         super.initialize(e);
     }
     //    public Controller(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator) {
@@ -92,21 +92,30 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
-        //this.sigma = this.phase.getLifeTime();
+//        System.out.print("---currrentModel:---" + this.modelName+"---deltaInternal, ");
+//        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
+        //this.elapsedTime = this.elapsedTime + 10;
         if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
         }
         if (this.phase.getName().equals("IDENTIFICATION")) {
+
 
         }
     }
 
     @Override
     protected void deltaExternal(Double e, Object value) {
+        this.elapsedTime = e;
+//        System.out.print("---currrentModel:---" + this.modelName+"---received Input, ");
+//        System.out.print("---simTime:---" + this.simulator.getSimulatorTime());
+//        System.out.print("---sigma:---" + this.sigma);
+//        System.out.print("---elapsedTime---"+e);
+//        System.out.println();
+
 //        if (this.sigma != Double.POSITIVE_INFINITY) {
 //            this.sigma = this.sigma -e ;
 //        }
-        this.elapsedTime = e;
         if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
         }
@@ -122,16 +131,20 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
     }
 
     @Override
-    protected void lambda() {
+    protected synchronized void lambda() {
         //System.out.println(this.modelName+" output......." + this.sigma +"---");
+        boolean flag = true;
         if (this.phase.getName().equals("IDENTIFICATION")) {
             if (target.name.equals("0") || currentPos.name.equals("0")) {
 
-            } else {
+            } else if(flag) {
                 MoveCmd msg = new MoveCmd(currentPos, target, "follow");
                 msg.senderId = super.modelName;
-                this.elapsedTime = 10.0;
+                //***************************************************************************************
+
+                //this.elapsedTime = -10.0;
                 out_MOVE_CMD.send(msg);
+                flag = false;
             }
         }
     }

@@ -77,9 +77,8 @@ public class Environment extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        if (this.sigma != Double.POSITIVE_INFINITY) {
-            this.sigma = (this.phase.getLifeTime() - e);
-        }
+        this.elapsedTime = e;
+
 
         if (this.phase.getName().equals("INFINITY")) {
             this.result = (MoveResult) value;
@@ -99,6 +98,6 @@ public class Environment extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
-        return this.sigma;
+        return this.phase.getLifeTime();
     }
 }
