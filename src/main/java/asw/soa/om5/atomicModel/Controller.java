@@ -7,6 +7,7 @@ import asw.soa.om5.portType.ENT_INFO;
 import asw.soa.om5.portType.MoveCmd;
 import asw.soa.om5.portType.MoveResult;
 import asw.soa.om5.portType.ThreatInfo;
+import asw.soa.util.SimUtil;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.AtomicModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
@@ -49,7 +50,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
         WAIT = new Phase("WAIT");
         WAIT.setLifeTime(Double.POSITIVE_INFINITY);
         IDENTIFICATION = new Phase("IDENTIFICATION");
-        IDENTIFICATION.setLifeTime(100);
+        IDENTIFICATION.setLifeTime(50.0);
 
         currentPos = new MoveResult();
         target = new ThreatInfo();
@@ -63,7 +64,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
         }
 
         this.phase = IDENTIFICATION;
-        //this.elapsedTime = e;
+        this.sigma = this.phase.getLifeTime();
         super.initialize(e);
     }
     //    public Controller(String modelName, final DEVSSimulatorInterface<Double,Double, SimTimeDouble> simulator) {
@@ -106,7 +107,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 //        if (this.sigma != Double.POSITIVE_INFINITY) {
 //            this.sigma = this.sigma -e ;
 //        }
-        this.elapsedTime = e;
+        this.elapsedTime =this.elapsedTime +  e;
         if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
         }
@@ -130,7 +131,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
             } else {
                 MoveCmd msg = new MoveCmd(currentPos, target, "follow");
                 msg.senderId = super.modelName;
-                this.elapsedTime = 10.0;
+                //this.elapsedTime = this.elapsedTime+SimUtil.getElapsedTime();
                 out_MOVE_CMD.send(msg);
             }
         }
@@ -138,6 +139,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
+//        return this.phase.getLifeTime()+SimUtil.getElapsedTime();
         return this.phase.getLifeTime();
     }
 }

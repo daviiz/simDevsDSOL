@@ -1,9 +1,6 @@
 package asw.soa.om5;
 
 import asw.soa.data.ModelData;
-import asw.soa.om5.atomicModel.Maneuver;
-import asw.soa.om5.atomicModel.Maneuver2;
-import asw.soa.om5.atomicModel.Sensor;
 import asw.soa.om5.coupledModel.RootCoupledModel;
 import asw.soa.view.Visual2dService;
 import nl.tudelft.simulation.dsol.SimRuntimeException;
@@ -36,7 +33,7 @@ public class ASWModel5 extends AbstractDSOLModel.TimeDouble<DEVSSimulatorInterfa
 
         RootCoupledModel root = new RootCoupledModel("root");
         root.setSimulator(this.simulator);
-        root.constructModel(f1Data, s1Data);
+        root.initialize(f1Data, s1Data);
 
         //new Maneuver2(f1Data.name + "$Maneuver2", root, f1Data).initialize(0.0);
 

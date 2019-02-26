@@ -24,7 +24,7 @@ public class Fleet extends CoupledModel<Double, Double, SimTimeDouble> {
 
     }
 
-    public void construcModel(ModelData data) {
+    public void initialize(ModelData data) {
         in_ENV_INFO = new In_ENV_INFO(this);
         out_ENT_INFO = new Out_ENT_INFO(this);
 

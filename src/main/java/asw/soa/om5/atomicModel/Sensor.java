@@ -58,7 +58,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
         currentPos = new MoveResult();
         target = new ENT_INFO();
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
-        DETECT.setLifeTime(100.0);
+        DETECT.setLifeTime(20.0);
 
         /**
          * 输入输出端口设置
@@ -75,7 +75,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
          * 模型状态初始化：
          */
         this.phase = DETECT;
-        this.sigma = this.phase.getLifeTime();
+        //this.sigma = this.phase.getLifeTime();
         super.initialize(e);
     }
     //    /**
@@ -122,6 +122,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
+        //System.out.println("---" + this.modelName+"---deltaInternal, time: " + this.simulator.getSimulatorTime());
         //this.sigma = this.phase.getLifeTime();
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
@@ -133,7 +134,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        this.elapsedTime = e;
+        this.elapsedTime =this.elapsedTime +  e;
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
         }
@@ -168,6 +169,10 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
             {
 
             }else {
+                //this.sigma = SimUtil.getElapsedTime();
+                //this.elapsedTime = this.elapsedTime +this.sigma;
+//                this.sigma = this.phase.getLifeTime() - SimUtil.getElapsedTime();
+                //this.elapsedTime = this.elapsedTime+SimUtil.getElapsedTime();
                 out_THREAT_INFO.send(result);
             }
         }
@@ -175,6 +180,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
+        //return this.phase.getLifeTime()+SimUtil.getElapsedTime();
         return this.phase.getLifeTime();
     }
 }

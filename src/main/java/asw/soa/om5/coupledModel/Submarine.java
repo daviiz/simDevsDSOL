@@ -21,7 +21,7 @@ public class Submarine extends CoupledModel<Double, Double, SimTimeDouble> {
 
     }
 
-    public void constructModel(ModelData data) {
+    public void initialize(ModelData data) {
 
         s = new Sensor2(data.name + "_sensor", this, data.detectRange);
         s.initialize(0.0);

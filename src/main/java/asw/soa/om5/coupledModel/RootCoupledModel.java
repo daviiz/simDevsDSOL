@@ -30,11 +30,11 @@ public class RootCoupledModel extends CoupledModel<Double, Double, SimTimeDouble
 
     }
 
-    public void constructModel(ModelData f1Data, ModelData s1Data) {
+    public void initialize(ModelData f1Data, ModelData s1Data) {
         sub = new Submarine("Submarine", this);
-        sub.constructModel(s1Data);
+        sub.initialize(s1Data);
         fleet = new Fleet("Fleet", this);
-        fleet.construcModel(f1Data);
+        fleet.initialize(f1Data);
 //        env = new Environment("env", this);
 //        env.initialize(0.0);
 

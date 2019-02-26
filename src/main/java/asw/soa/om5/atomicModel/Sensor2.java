@@ -122,7 +122,7 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
-//        System.out.print("---currrentModel:---" + this.modelName+"---deltaInternal, ");
+        System.out.println("---" + this.modelName+"---deltaInternal, time: " + this.simulator.getSimulatorTime());
 //        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
         //this.sigma = this.phase.getLifeTime();
         if (this.phase.getName().equals("IDLE")) {
@@ -135,7 +135,7 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        this.elapsedTime = e;
+        this.elapsedTime = this.elapsedTime +  e;
 
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
@@ -171,7 +171,8 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
             {
 
             }else {
-                this.elapsedTime = 10.0;
+//                this.sigma = this.phase.getLifeTime() - SimUtil.getElapsedTime();
+                //this.elapsedTime = this.elapsedTime+SimUtil.getElapsedTime();
                 out_THREAT_INFO.send(result);
             }
         }
@@ -179,6 +180,7 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
+//        return this.phase.getLifeTime()+SimUtil.getElapsedTime();
         return this.phase.getLifeTime();
     }
 }

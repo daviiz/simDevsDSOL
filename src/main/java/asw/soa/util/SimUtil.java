@@ -1,5 +1,8 @@
 package asw.soa.util;
 
+import nl.tudelft.simulation.jstats.distributions.DistNormal;
+import nl.tudelft.simulation.jstats.streams.MersenneTwister;
+import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.language.d3.CartesianPoint;
 
 /**
@@ -54,6 +57,13 @@ public class SimUtil {
             return new CartesianPoint(src_x + _delta_x, src_y + _delta_y, 0);
         else
             return new CartesianPoint(src_x - _delta_x, src_y - _delta_y, 0);
+    }
+
+    public static double getElapsedTime(){
+        StreamInterface stream = new MersenneTwister();
+        //final double mu, final double sigma
+        return Math.abs(new DistNormal(stream, 0, 1).draw());
+        //return 0.0;
     }
 
 }

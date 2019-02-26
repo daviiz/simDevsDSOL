@@ -7,6 +7,7 @@ import asw.soa.om5.portType.ENT_INFO;
 import asw.soa.om5.portType.MoveCmd;
 import asw.soa.om5.portType.MoveResult;
 import asw.soa.om5.portType.ThreatInfo;
+import asw.soa.util.SimUtil;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.AtomicModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.CoupledModel;
 import nl.tudelft.simulation.dsol.formalisms.devs.ESDEVS.Phase;
@@ -49,7 +50,7 @@ public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
         WAIT = new Phase("WAIT");
         WAIT.setLifeTime(Double.POSITIVE_INFINITY);
         IDENTIFICATION = new Phase("IDENTIFICATION");
-        IDENTIFICATION.setLifeTime(100);
+        IDENTIFICATION.setLifeTime(50.0);
 
         currentPos = new MoveResult();
         target = new ThreatInfo();
@@ -106,7 +107,8 @@ public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        this.elapsedTime = e;
+        System.out.println("---" + this.modelName+"---deltaInternal, time: " + this.simulator.getSimulatorTime());
+        this.elapsedTime =this.elapsedTime +  e;
 //        System.out.print("---currrentModel:---" + this.modelName+"---received Input, ");
 //        System.out.print("---simTime:---" + this.simulator.getSimulatorTime());
 //        System.out.print("---sigma:---" + this.sigma);
@@ -132,25 +134,25 @@ public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected synchronized void lambda() {
-        //System.out.println(this.modelName+" output......." + this.sigma +"---");
-        boolean flag = true;
+
         if (this.phase.getName().equals("IDENTIFICATION")) {
             if (target.name.equals("0") || currentPos.name.equals("0")) {
 
-            } else if(flag) {
+            }
+            else{
                 MoveCmd msg = new MoveCmd(currentPos, target, "follow");
                 msg.senderId = super.modelName;
-                //***************************************************************************************
+                //this.elapsedTime = this.elapsedTime+SimUtil.getElapsedTime();
 
-                //this.elapsedTime = -10.0;
                 out_MOVE_CMD.send(msg);
-                flag = false;
+
             }
         }
     }
 
     @Override
     protected Double timeAdvance() {
+//        return this.phase.getLifeTime()+SimUtil.getElapsedTime();
         return this.phase.getLifeTime();
     }
 }

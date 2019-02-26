@@ -53,7 +53,7 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
         IDLE = new Phase("IDLE");
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
         MOVE = new Phase("MOVE");
-        MOVE.setLifeTime(100);
+        MOVE.setLifeTime(50.0);
         FUEL = new Phase("FUEL");
         FUEL.setLifeTime(0);
 
@@ -120,9 +120,10 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected void deltaInternal() {
-        this.elapsedTime = this.elapsedTime + 10;
-        System.out.print("---currrentModel:---" + this.modelName+"---deltaInternal, ");
-        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
+        System.out.println("---" + this.modelName+"---deltaInternal, time: " + this.simulator.getSimulatorTime());
+//        this.elapsedTime = this.elapsedTime + 10;
+//        System.out.print("---currrentModel:---" + this.modelName+"---deltaInternal, ");
+//        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
         //this.sigma = this.phase.getLifeTime();
         if (super.phase.getName().equals("IDLE")) {
             this.phase = MOVE;
@@ -156,7 +157,8 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected synchronized void deltaExternal(Double e, Object value) {
-            this.elapsedTime = e;
+
+        this.elapsedTime =this.elapsedTime +  e;
 //        if (this.sigma != Double.POSITIVE_INFINITY) {
 //            //double tmp = (this.phase.getLifeTime() - e);
 //            this.sigma = this.sigma -e ;
@@ -183,7 +185,8 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
             MoveResult result = new MoveResult(data);
             result.senderId = super.modelName;
             if (result.name.equals("0")) return;
-            this.elapsedTime = 10.0;
+//            this.sigma = this.phase.getLifeTime() - SimUtil.getElapsedTime();
+            //this.elapsedTime = this.elapsedTime+SimUtil.getElapsedTime();
             out_MOVE_RESULT.send(result);
             //System.out.println("=================="+result.name);
         }
@@ -198,6 +201,7 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
     protected Double timeAdvance()
     {
         //System.out.println("--current Model: "+this.modelName+"---simTime: "+super.simulator.getSimulatorTime()+" timeAdvance:---" + this.sigma);
+//        return this.phase.getLifeTime()+SimUtil.getElapsedTime();
         return this.phase.getLifeTime();
     }
 }
