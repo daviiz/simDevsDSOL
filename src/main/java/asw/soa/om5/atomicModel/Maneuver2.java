@@ -147,7 +147,7 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected synchronized void deltaExternal(Double e, Object value) {
-
+        System.out.println("--" + this.modelName+" --Input: "+"deltaExternal"+", SimTime: " + this.simulator.getSimulatorTime());
         this.elapsedTime =  this.elapsedTime + e;
 
         if (this.phase.getName().equals("MOVE")) {
@@ -183,6 +183,6 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected Double timeAdvance()
     {
-        return this.phase.getLifeTime();
+        return this.phase.getLifeTime()+this.elapsedTime;
     }
 }

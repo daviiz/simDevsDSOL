@@ -99,6 +99,7 @@ public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected void deltaExternal(Double e, Object value) {
         this.elapsedTime =  e;
+        System.out.println("--" + this.modelName+" --Input: "+"deltaExternal"+", SimTime: " + this.simulator.getSimulatorTime());
 
         if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
@@ -132,6 +133,6 @@ public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected Double timeAdvance() {
-        return this.phase.getLifeTime();
+        return this.phase.getLifeTime()+this.elapsedTime;
     }
 }

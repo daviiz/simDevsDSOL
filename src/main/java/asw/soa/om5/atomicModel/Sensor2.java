@@ -170,6 +170,6 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected Double timeAdvance() {
 //        return this.phase.getLifeTime()+SimUtil.getElapsedTime();
-        return this.phase.getLifeTime();
+        return this.phase.getLifeTime()+this.elapsedTime;
     }
 }
