@@ -122,19 +122,12 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaInternal() {
-        System.out.println("---" + this.modelName+"---deltaInternal, time: " + this.simulator.getSimulatorTime());
-//        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
-        //this.sigma = this.phase.getLifeTime();
-        if (this.phase.getName().equals("IDLE")) {
-            this.phase = DETECT;
-        }
-        if (this.phase.getName().equals("DETECT")) {
-
-        }
     }
 
     @Override
     protected void deltaExternal(Double e, Object value) {
+//        System.out.println("---" + this.modelName+"---deltaExternal, SimTime: " + this.simulator.getSimulatorTime());
+
         this.elapsedTime =  e;
 
         if (this.phase.getName().equals("IDLE")) {
@@ -145,6 +138,7 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
                 //传感器接收自己的机动信息，决策依据：
                 currentPos = (MoveResult) value;
+                //System.out.println("--" + this.modelName+" ---Input: "+currentPos.toString() + ", SimTime: " + this.simulator.getSimulatorTime());
 
             } else if (this.activePort == in_THREAT_ENT_INFO) {
 
@@ -154,6 +148,7 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
                     double distance = SimUtil.calcLength(currentPos.x, currentPos.y, ent.x, ent.y);
                     if (distance < this.detectRange)
                         target = new ENT_INFO(ent);
+                    //System.out.println("--" + this.modelName+" ---Input: "+target.toString() + ", SimTime: " + this.simulator.getSimulatorTime());
                 }
 
             }
@@ -162,19 +157,13 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void lambda() {
-//        System.out.println(this.modelName+" output......." + this.sigma +"---");
+//        System.out.println("---" + this.modelName+"---lambda, SimTime: " + this.simulator.getSimulatorTime());
         if (this.phase.getName().equals("DETECT")) {
             ENT_INFO result = new ENT_INFO(target);
             result.senderId = super.modelName;
 
-            if (result.name.equals("0"))
-            {
-
-            }else {
-//                this.sigma = this.phase.getLifeTime() - SimUtil.getElapsedTime();
-                //this.elapsedTime = this.elapsedTime+SimUtil.getElapsedTime();
-                out_THREAT_INFO.send(result);
-            }
+            //System.out.println("--" + this.modelName+" --Output: "+result.toString()+", SimTime: " + this.simulator.getSimulatorTime());
+            out_THREAT_INFO.send(result);
         }
     }
 

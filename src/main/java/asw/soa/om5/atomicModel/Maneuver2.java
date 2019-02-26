@@ -120,27 +120,17 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected void deltaInternal() {
-        System.out.println("---" + this.modelName+"---deltaInternal, time: " + this.simulator.getSimulatorTime());
-//        this.elapsedTime = this.elapsedTime + 10;
-//        System.out.print("---currrentModel:---" + this.modelName+"---deltaInternal, ");
-//        System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
-        //this.sigma = this.phase.getLifeTime();
+
         if (super.phase.getName().equals("IDLE")) {
             this.phase = MOVE;
         }
         if (super.phase.getName().equals("MOVE")) {
-            //this.sigma = this.phase.getLifeTime();
             this.data.origin = this.data.destination;
 
-            if (!this.data.status) {
+            if(this.moveCmd.cmd.equals("0")||this.moveCmd.threat.name.equals("0") || this.moveCmd.currentPos.name.equals("0") || this.target.name.equals("0") || this.data.status==false){
                 this.data.destination = new CartesianPoint(data.destination.x, data.destination.y, 0);
-            } else if (this.target.name.equals("0")) {
-                data.destination = new CartesianPoint(data.destination.x + data.speed, data.destination.y + data.speed,
-                        0);
-            } else {
-
+            }else{
                 boolean isFollow = this.moveCmd.cmd.equals("follow");
-                //System.out.println(data.name+"----------"+isFollow+"--------------"+target.name);
                 data.destination = SimUtil.nextPoint(data.origin.x, data.origin.y, target.x,
                         target.y, data.speed, isFollow);
             }
@@ -158,21 +148,14 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected synchronized void deltaExternal(Double e, Object value) {
 
-        this.elapsedTime =  e;
-//        if (this.sigma != Double.POSITIVE_INFINITY) {
-//            //double tmp = (this.phase.getLifeTime() - e);
-//            this.sigma = this.sigma -e ;
-//        }
-//        if("Sub_1_maneuver".equals(this.modelName)){
-//            System.out.println("---simTime:---" + this.simulator.getSimulatorTime());
-//            System.out.println("---sigma:---" + this.sigma);
-//            System.out.println("---elapsedTime---"+e);
-//        }
+        this.elapsedTime =  this.elapsedTime + e;
+
         if (this.phase.getName().equals("MOVE")) {
             this.moveCmd = (MoveCmd) value;
+
             this.target = new ENT_INFO(this.moveCmd.threat);
+            //System.out.println("--" + this.modelName+" ---Input: "+moveCmd.toString()+", SimTime: " + this.simulator.getSimulatorTime());
         }
-//        this.sigma = Double.POSITIVE_INFINITY;
     }
 
     /**
@@ -180,15 +163,15 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
      */
     @Override
     protected void lambda() {
-
+        System.out.println("--" + this.modelName+" --Output: "+"lambda"+", SimTime: " + this.simulator.getSimulatorTime());
         if (this.phase.getName().equals("MOVE")) {
             MoveResult result = new MoveResult(data);
             result.senderId = super.modelName;
+
             if (result.name.equals("0")) return;
-//            this.sigma = this.phase.getLifeTime() - SimUtil.getElapsedTime();
-            //this.elapsedTime = this.elapsedTime+SimUtil.getElapsedTime();
+
+            //System.out.println("--" + this.modelName+" --Output: "+result.toString()+", SimTime: " + this.simulator.getSimulatorTime());
             out_MOVE_RESULT.send(result);
-            //System.out.println("=================="+result.name);
         }
     }
 
@@ -200,8 +183,6 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected Double timeAdvance()
     {
-        //System.out.println("--current Model: "+this.modelName+"---simTime: "+super.simulator.getSimulatorTime()+" timeAdvance:---" + this.sigma);
-//        return this.phase.getLifeTime()+SimUtil.getElapsedTime();
         return this.phase.getLifeTime();
     }
 }
