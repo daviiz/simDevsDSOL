@@ -134,7 +134,7 @@ public class Sensor extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        this.elapsedTime =this.elapsedTime +  e;
+        this.elapsedTime =  e;
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;
         }

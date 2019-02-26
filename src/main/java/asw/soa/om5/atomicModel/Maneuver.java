@@ -71,7 +71,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
          * 模型状态初始化：
          */
         this.phase = MOVE;
-        this.sigma = this.phase.getLifeTime();
+        //this.sigma = this.phase.getLifeTime();
         super.initialize(e);
     }
     //    /**
@@ -153,7 +153,7 @@ public class Maneuver extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected synchronized void deltaExternal(Double e, Object value) {
 
-        this.elapsedTime =this.elapsedTime +  e;
+        this.elapsedTime = e;
         if (this.phase.getName().equals("MOVE")) {
             this.moveCmd = (MoveCmd) value;
         }

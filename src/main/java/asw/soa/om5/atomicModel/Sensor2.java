@@ -58,7 +58,7 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
         currentPos = new MoveResult();
         target = new ENT_INFO();
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
-        DETECT.setLifeTime(100.0);
+        DETECT.setLifeTime(20.0);
 
         /**
          * 输入输出端口设置
@@ -135,7 +135,7 @@ public class Sensor2 extends AtomicModel<Double, Double, SimTimeDouble> {
 
     @Override
     protected void deltaExternal(Double e, Object value) {
-        this.elapsedTime = this.elapsedTime +  e;
+        this.elapsedTime =  e;
 
         if (this.phase.getName().equals("IDLE")) {
             this.phase = DETECT;

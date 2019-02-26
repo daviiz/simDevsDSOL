@@ -53,7 +53,7 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
         IDLE = new Phase("IDLE");
         IDLE.setLifeTime(Double.POSITIVE_INFINITY);
         MOVE = new Phase("MOVE");
-        MOVE.setLifeTime(50.0);
+        MOVE.setLifeTime(30);
         FUEL = new Phase("FUEL");
         FUEL.setLifeTime(0);
 
@@ -71,7 +71,7 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
          * 模型状态初始化：
          */
         this.phase = MOVE;
-        this.sigma = this.phase.getLifeTime();
+        //this.sigma = this.phase.getLifeTime();
         super.initialize(e);
     }
     //    /**
@@ -158,7 +158,7 @@ public class Maneuver2 extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected synchronized void deltaExternal(Double e, Object value) {
 
-        this.elapsedTime =this.elapsedTime +  e;
+        this.elapsedTime =  e;
 //        if (this.sigma != Double.POSITIVE_INFINITY) {
 //            //double tmp = (this.phase.getLifeTime() - e);
 //            this.sigma = this.sigma -e ;

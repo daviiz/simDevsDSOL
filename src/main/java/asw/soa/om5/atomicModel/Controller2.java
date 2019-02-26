@@ -50,7 +50,7 @@ public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
         WAIT = new Phase("WAIT");
         WAIT.setLifeTime(Double.POSITIVE_INFINITY);
         IDENTIFICATION = new Phase("IDENTIFICATION");
-        IDENTIFICATION.setLifeTime(50.0);
+        IDENTIFICATION.setLifeTime(30.0);
 
         currentPos = new MoveResult();
         target = new ThreatInfo();
@@ -108,7 +108,7 @@ public class Controller2 extends AtomicModel<Double, Double, SimTimeDouble> {
     @Override
     protected void deltaExternal(Double e, Object value) {
         System.out.println("---" + this.modelName+"---deltaInternal, time: " + this.simulator.getSimulatorTime());
-        this.elapsedTime =this.elapsedTime +  e;
+        this.elapsedTime =  e;
 //        System.out.print("---currrentModel:---" + this.modelName+"---received Input, ");
 //        System.out.print("---simTime:---" + this.simulator.getSimulatorTime());
 //        System.out.print("---sigma:---" + this.sigma);

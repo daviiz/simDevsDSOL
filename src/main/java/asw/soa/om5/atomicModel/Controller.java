@@ -50,7 +50,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
         WAIT = new Phase("WAIT");
         WAIT.setLifeTime(Double.POSITIVE_INFINITY);
         IDENTIFICATION = new Phase("IDENTIFICATION");
-        IDENTIFICATION.setLifeTime(50.0);
+        IDENTIFICATION.setLifeTime(30);
 
         currentPos = new MoveResult();
         target = new ThreatInfo();
@@ -107,7 +107,7 @@ public class Controller extends AtomicModel<Double, Double, SimTimeDouble> {
 //        if (this.sigma != Double.POSITIVE_INFINITY) {
 //            this.sigma = this.sigma -e ;
 //        }
-        this.elapsedTime =this.elapsedTime +  e;
+        this.elapsedTime = e;
         if (this.phase.getName().equals("WAIT")) {
             this.phase = IDENTIFICATION;
         }
